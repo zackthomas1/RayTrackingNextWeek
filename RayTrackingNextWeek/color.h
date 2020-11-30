@@ -13,8 +13,10 @@ void write_color(std::ostream& out, color pixel_color, int samples_per_pixel)
 	auto g = pixel_color.y(); 
 	auto b = pixel_color.z(); 
 
-	// Divide the color hy the number of smaples. 
+	// Divide the color by the number of samples. 
 	auto scale = 1.0 / (samples_per_pixel); 
+
+	// sqrt gamma correction of color
 	r = sqrt(scale * r); 
 	g = sqrt(scale * g);
 	b = sqrt(scale * b);
