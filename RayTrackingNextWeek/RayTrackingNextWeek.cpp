@@ -9,9 +9,19 @@
 #include "moving_sphere.h"
 #include "camera.h"
 #include "material.h"
+#include "aarect.h"
 
 // Consider moving in ray header file/ ray class
-color ray_color(const ray& r, const hittable& world, int depth) {
+
+/// <summary>
+/// returns the color value of a ray cast into a scene
+/// </summary>
+/// <param name="r"></param>
+/// <param name="background"></param>
+/// <param name="world"></param>
+/// <param name="depth"></param>
+/// <returns></returns>
+color ray_color(const ray& r,const color& background, const hittable& world, int depth) {
 
 	hit_record rec;
 
@@ -20,25 +30,28 @@ color ray_color(const ray& r, const hittable& world, int depth) {
 	if (depth <= 0)
 		return color(0, 0, 0);
 
-	// if an object in the scene is hit
-	if (world.hit(r, 0.001, infinity, rec)) {
-
-		ray scattered;
-		color attenuation;
-
-		if (rec.mat_ptr->scatter(r, rec, attenuation, scattered))
-			return attenuation * ray_color(scattered, world, depth - 1);
-
-		return color(0, 0, 0);
+	// If the ray hits nothing, return the background color.
+	if (!world.hit(r, 0.001, infinity, rec)) {
+		return background;
 	}
 
-	// if NO object is hit render default sky background
-	vec3 unit_direction = unit_vector(r.direction());
-	auto t = 0.5 * (unit_direction.y() + 1.0);
-	return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0); // linear interpolation
-	// blendValue = (1 -t) * startValue + t * endValue
+	ray scattered;
+	color attenuation;
+	color emitted = rec.mat_ptr->emitted(rec.u, rec.v, rec.p);
+
+	if (!rec.mat_ptr->scatter(r, rec, attenuation, scattered))
+		return emitted;
+
+	return emitted + attenuation * ray_color(scattered, background, world, depth - 1);
+
+	//// if NO object is hit render default sky background
+	//vec3 unit_direction = unit_vector(r.direction());
+	//auto t = 0.5 * (unit_direction.y() + 1.0);
+	//return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0); // linear interpolation
+	//// blendValue = (1 -t) * startValue + t * endValue
 }
 
+// Scenes
 hittable_list random_scene() {
 
 	hittable_list world;
@@ -91,7 +104,6 @@ hittable_list random_scene() {
 
 	return world;
 }
-
 hittable_list two_spheres() {
 	hittable_list objects; 
 
@@ -103,7 +115,6 @@ hittable_list two_spheres() {
 
 	return objects;
 }
-
 hittable_list two_perlin_spheres() {
 	hittable_list objects; 
 
@@ -115,14 +126,48 @@ hittable_list two_perlin_spheres() {
 
 	return objects;
 }
+//hittable_list earth(){}
+hittable_list simple_light() {
+	hittable_list objects;
+
+	auto pertext = make_shared<noise_texture>(4);
+	auto pertext_material = make_shared<lambertian>(pertext);
+
+	objects.add(make_shared<sphere>(point3(0, -1000, 0), 1000, pertext_material));
+	objects.add(make_shared<sphere>(point3(0, 2, 0), 2, pertext_material));
+
+	auto difflight = make_shared<diffuse_light>(color(4, 4, 4));
+	objects.add(make_shared<xy_rect>(3, 5, 1, 3, -2, difflight));
+	objects.add(make_shared<sphere>(point3(0, 8, 0), 3, difflight));
+
+	return objects;
+}
+hittable_list cornell_box() {
+	hittable_list objects;
+
+	auto red = make_shared<lambertian>(color(0.65, 0.05, 0.05));
+	auto white = make_shared<lambertian>(color(0.73, 0.73, 0.73));
+	auto green = make_shared<lambertian>(color(0.12, 0.45, 0.15));
+	auto light = make_shared<diffuse_light>(color(15, 15, 15));
+
+	objects.add(make_shared<yz_rect>(0, 555, 0, 555, 555, green));
+	objects.add(make_shared<yz_rect>(0, 555, 0, 555, 0, red));
+	objects.add(make_shared<xz_rect>(150, 400, 200, 350, 554, light));
+	objects.add(make_shared<xz_rect>(0, 555, 0, 555, 0, white));
+	objects.add(make_shared<xz_rect>(0, 555, 0, 555, 555, white));
+	objects.add(make_shared<xy_rect>(0, 555, 0, 555, 555, white));
+
+	return objects;
+}
+
 
 int main()
 {
 	//	Image 
-	const auto aspect_ratio = 16.0 / 9.0;
-	const int image_width = 480;
-	const int samples_per_pixel = 100;  // Sets anti-alaising samples
-	const int max_depth = 50;	// sets recussive limt for ray_color function
+	auto aspect_ratio = 16.0 / 9.0;
+	int samples_per_pixel = 100;  // Sets anti-alaising samples
+	int image_width = 480;
+	int max_depth = 50;	// sets recussive limt for ray_color function
 
 	// World 
 	hittable_list world;
@@ -131,11 +176,14 @@ int main()
 	point3 lookat;
 	auto vfov = 40.0;
 	auto aperture = 0.0;
+	color background(0, 0, 0);
 
-	switch (3)
+	// Choosen a scene
+	switch (6)
 	{
 	case 1:
 		world = random_scene();
+		background = color(0.70, 0.80, 1.00);
 		lookfrom = point3(13, 2, 3);
 		lookat = point3(0, 0, 0);
 		vfov = 20.0;
@@ -144,6 +192,7 @@ int main()
 
 	case 2:
 		world = two_spheres();
+		background = color(0.70, 0.80, 1.00);
 		lookfrom = point3(13, 2, 3);
 		lookat = point3(0, 0, 0);
 		vfov = 20.0;
@@ -151,13 +200,43 @@ int main()
 
 	case 3:
 		world = two_perlin_spheres(); 
+		background = color(0.70, 0.80, 1.00);
 		lookfrom = point3(13, 2, 3);
 		lookat = point3(0, 0, 0);
 		vfov = 20.0;
 		break;
 
+	//case 4:
+	//	world = earth();
+	//	background = color(0.70, 0.80, 1.00);
+	//	lookfrom = point3(13, 2, 3);
+	//	lookat = point3(0, 0, 0);
+	//	vfov = 20.0;
+	//	break;
+
+	case 5:
+		world = simple_light();
+		samples_per_pixel = 400;
+		background = color(0, 0, 0);
+		lookfrom = point3(26, 3, 6);
+		lookat = point3(0, 2, 0);
+		vfov = 20.0;
+		break;
+	
+	case 6:
+		world = cornell_box();
+		aspect_ratio = 1.0;
+		image_width = 600;
+		samples_per_pixel = 1200;
+		background = color(0, 0, 0);
+		lookfrom = point3(278, 278, -800);
+		lookat = point3(278, 278, 0);
+		vfov = 40.0;
+		break;
+
 	default:
-		std::cerr << "ERROR: No Scene selected. \n";
+	case 7:
+		background = color(0.0, 0.0, 0.0);
 		break;
 	}
 
@@ -181,7 +260,7 @@ int main()
 				auto u = (i + random_double()) / (image_width - 1);
 				auto v = (j + random_double()) / (image_height - 1);
 				ray r = cam.get_ray(u, v);
-				pixel_color += ray_color(r, world, max_depth);
+				pixel_color += ray_color(r, background, world, max_depth);
 			}
 			write_color(std::cout, pixel_color, samples_per_pixel);
 		}
