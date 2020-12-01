@@ -17,7 +17,6 @@ public:
 		return true;
 	}
 
-
 public: 
 	shared_ptr<material> mp; 
 	double x0, x1, y0, y1, k;
@@ -37,7 +36,6 @@ public:
 		output_box = aabb(point3(x0, k - 0.0001, z0), point3(x1, k + 0.0001, z1));
 		return true;
 	}
-
 
 public:
 	shared_ptr<material> mp;
@@ -59,14 +57,10 @@ public:
 		return true;
 	}
 
-
 public:
 	shared_ptr<material> mp;
 	double y0, y1, z0, z1, k;
 };
-
-
-
 
 
 
