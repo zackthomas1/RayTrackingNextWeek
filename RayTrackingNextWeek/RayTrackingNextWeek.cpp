@@ -34,6 +34,15 @@ color ray_color(const ray& r,const color& background, const hittable& world, int
 
 	// If the ray hits nothing, return the background color.
 	if (!world.hit(r, 0.001, infinity, rec)) {
+		
+		/*
+		// if NO object is hit render default sky background
+		vec3 unit_direction = unit_vector(r.direction());
+		auto t = 0.5 * (unit_direction.y() + 1.0);
+		return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0); // linear interpolation
+		// blendValue = (1 -t) * startValue + t * endValue
+		*/
+
 		return background;
 	}
 
@@ -45,12 +54,6 @@ color ray_color(const ray& r,const color& background, const hittable& world, int
 		return emitted;
 
 	return emitted + attenuation * ray_color(scattered, background, world, depth - 1);
-
-	//// if NO object is hit render default sky background
-	//vec3 unit_direction = unit_vector(r.direction());
-	//auto t = 0.5 * (unit_direction.y() + 1.0);
-	//return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0); // linear interpolation
-	//// blendValue = (1 -t) * startValue + t * endValue
 }
 
 // Scenes
@@ -128,7 +131,16 @@ hittable_list two_perlin_spheres() {
 
 	return objects;
 }
-//hittable_list earth(){}
+hittable_list earth(){
+	hittable_list objects;
+	auto earth_texture = make_shared<image_texture>("..\\_SourceImages\\earthmap.jpg"); 
+	auto earth_surface = make_shared<lambertian>(earth_texture); 
+	auto globe = make_shared<sphere>(point3(0, 0, 0), 2, earth_surface);
+
+	objects.add(globe); 
+
+	return objects;
+}
 hittable_list simple_light() {
 	hittable_list objects;
 
@@ -174,7 +186,6 @@ hittable_list cornell_box() {
 	return objects;
 }
 
-
 int main()
 {
 	//	Image 
@@ -185,7 +196,6 @@ int main()
 
 	// World 
 	hittable_list world;
-	
 	point3 lookfrom;
 	point3 lookat;
 	auto vfov = 40.0;
@@ -193,7 +203,7 @@ int main()
 	color background(0, 0, 0);
 
 	// Choosen a scene
-	switch (6)
+	switch (4)
 	{
 	case 1:
 		world = random_scene();
@@ -220,13 +230,13 @@ int main()
 		vfov = 20.0;
 		break;
 
-	//case 4:
-	//	world = earth();
-	//	background = color(0.70, 0.80, 1.00);
-	//	lookfrom = point3(13, 2, 3);
-	//	lookat = point3(0, 0, 0);
-	//	vfov = 20.0;
-	//	break;
+	case 4:
+		world = earth();
+		background = color(0.70, 0.80, 1.00);
+		lookfrom = point3(13, 2, 3);
+		lookat = point3(0, 0, 0);
+		vfov = 20.0;
+		break;
 
 	case 5:
 		world = simple_light();

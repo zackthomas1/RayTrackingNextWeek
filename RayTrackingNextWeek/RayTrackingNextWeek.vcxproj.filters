@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Utility">
+      <UniqueIdentifier>{f97d0769-9a88-4213-9ae7-bcbae5802673}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Hittables">
+      <UniqueIdentifier>{72ec447b-aee4-4839-980a-fbfcf51b5ed4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="RayTrackingNextWeek.cpp">
@@ -26,28 +32,13 @@
     <ClInclude Include="color.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="hittable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="hittable_list.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="rtweekend.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sphere.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="vec3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="moving_sphere.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="aabb.h">
@@ -62,11 +53,29 @@
     <ClInclude Include="perlin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="aarect.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="box.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Hittables</Filter>
+    </ClInclude>
+    <ClInclude Include="hittable.h">
+      <Filter>Header Files\Hittables</Filter>
+    </ClInclude>
+    <ClInclude Include="hittable_list.h">
+      <Filter>Header Files\Hittables</Filter>
+    </ClInclude>
+    <ClInclude Include="moving_sphere.h">
+      <Filter>Header Files\Hittables</Filter>
+    </ClInclude>
+    <ClInclude Include="sphere.h">
+      <Filter>Header Files\Hittables</Filter>
+    </ClInclude>
+    <ClInclude Include="rtweekend.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="rtw_stb_image.h">
+      <Filter>Header Files\Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="aarect.h">
+      <Filter>Header Files\Hittables</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
