@@ -133,10 +133,17 @@ hittable_list two_perlin_spheres() {
 }
 hittable_list earth(){
 	hittable_list objects;
-	auto earth_texture = make_shared<image_texture>("..\\_SourceImages\\earthmap.jpg"); 
-	auto earth_surface = make_shared<lambertian>(earth_texture); 
-	auto globe = make_shared<sphere>(point3(0, 0, 0), 2, earth_surface);
 
+	auto perlinNoise = make_shared<noise_texture>(4);
+	auto groundMat = make_shared<lambertian>(perlinNoise);
+	objects.add(make_shared<xz_rect>(-100, 100, -100, 100, -2, groundMat));
+
+	auto white = make_shared<lambertian>(color(0.73, 0.73, 0.73));
+	objects.add(make_shared<sphere>(point3(1, 0, -3), 1, white));
+
+	auto earth_texture = make_shared<image_texture>("..\\_SourceImages\\earthmap.jpg"); 
+	auto earth_surface = make_shared<metal>(earth_texture, .05); 
+	auto globe = make_shared<sphere>(point3(0, 0, 0), 2, earth_surface);
 	objects.add(globe); 
 
 	return objects;
@@ -176,12 +183,19 @@ hittable_list cornell_box() {
 	box1 = make_shared<translate>(box1, vec3(265, 0, 295));
 	objects.add(box1);
 
+	/*
 	shared_ptr<hittable> box2 = make_shared<box>(point3(0, 0, 0), point3(165, 165, 165), white);
 	//box2 = make_shared<rotate_x>(box2, -20);
 	box2 = make_shared<rotate_y>(box2, -18);
 	//box2 = make_shared<rotate_z>(box2, -18);
 	box2 = make_shared<translate>(box2, vec3(130, 1, 65));
 	objects.add(box2);
+	*/
+
+	auto earth_texture = make_shared<image_texture>("..\\_SourceImages\\earthmap.jpg");
+	auto earthMetal_surface = make_shared<metal>(earth_texture, .2);
+	auto globe = make_shared<sphere>(point3(0, 0, 0), 2, earthMetal_surface);
+	objects.add(globe);
 
 	return objects;
 }
