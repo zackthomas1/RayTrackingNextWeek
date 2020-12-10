@@ -28,6 +28,7 @@ struct hit_record {
 
 class hittable {
 public: 
+
 	/// <summary>
 	/// Updates hitRecord with data about closest ray-hittable object intersection 
 	/// to ray origin(ie. camera)
