@@ -7,10 +7,25 @@
 class bvh_node : public hittable {
 public: 
 	bvh_node(); 
+
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="list"></param>
+	/// <param name="time0"></param>
+	/// <param name="time1"></param>
 	bvh_node(const hittable_list& list, double time0, double time1)
 		: bvh_node(list.objects, 0, list.objects.size(), time0, time1)
 	{}
 
+	/// <summary>
+	/// 
+	/// </summary>
+	/// <param name="scr_objects"></param>
+	/// <param name="start"></param>
+	/// <param name="end"></param>
+	/// <param name="time0"></param>
+	/// <param name="time1"></param>
 	bvh_node(const std::vector<shared_ptr<hittable>>& scr_objects, 
 			 size_t start, size_t end, double time0, double time1);
 
